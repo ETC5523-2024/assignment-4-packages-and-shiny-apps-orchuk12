@@ -3,9 +3,7 @@ Title: Examining Electric Vehicle Data in Washington State, USA.
 Version: 0.0.0.9000
 Authors@R: 
     person("Rayyan", "Aamir", , "raam0001@student.monash.edu", role = c("aut", "cre"))
-Description: This package invludes an rshiny app which studies the statistics behind electric 
-vehicles in the State of Washington in the US. The app provides interactivity for the user to test
-combinations of variables and come upon their own conclusions regarding electric vehicles.
+Description: This package includes an RShiny app which studies the statistics behind electric vehicles in the State of Washington in the US. The app provides interactivity for the user to test combinations of variables and come upon their own conclusions regarding electric vehicles.
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8
@@ -14,3 +12,11 @@ RoxygenNote: 7.3.1
 Depends: 
     R (>= 2.10)
 LazyData: true
+Imports: 
+    dplyr,
+    ggplot2,
+    janitor,
+    readr,
+    shiny,
+    shinydashboard,
+    tidyr
