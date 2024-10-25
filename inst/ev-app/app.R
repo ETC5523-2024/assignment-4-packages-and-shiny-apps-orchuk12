@@ -4,6 +4,7 @@ library(dashboardthemes)
 library(tidyverse)
 library(plotly)
 library(kableExtra)
+library(DT)
 
 # Define the UI with shinydashboard
 ui <- dashboardPage(
@@ -93,8 +94,22 @@ ui <- dashboardPage(
 
       # Your Options Tab (with filtering options and summary)
       tabItem(tabName = "options",
+              # Title and description at the top
               fluidRow(
-                # Filtering box moved from Analysis tab
+                column(width = 12,
+                       h2("Explore Your Electric Vehicle Options",
+                          style = "font-size: 32px; font-family: 'Times New Roman';
+                            text-align: center; font-weight: bold; margin-top: 20px;"),
+                       p("Use the criteria below to filter and find electric vehicles that match your preferences.
+                   Adjust the range, make, type, and model year to narrow down your search.",
+                         style = "font-size: 18px; font-family: 'Times New Roman';
+                            text-align: center; margin-bottom: 20px;")
+                )
+              ),
+
+              # Filtering options and testing text
+              fluidRow(
+                # Selection criteria box
                 box(
                   title = "Select Criteria for Analysis",
                   status = "primary",
@@ -104,7 +119,7 @@ ui <- dashboardPage(
                   # Slider input for electric range
                   sliderInput("mileage",
                               "Desired Electric Range (in miles):",
-                              min = 0, max = 337, value = c(0, 100)),
+                              min = 0, max = 337, value = c(0, 337)),
 
                   # Select input for car make
                   selectInput("make",
@@ -122,34 +137,39 @@ ui <- dashboardPage(
                               selected = "All",
                               multiple = TRUE),
 
+                  # Select input for model year
+                  selectInput("model_year",
+                              "Select Model Year:",
+                              choices = c("All", as.character(2010:2024)),
+                              selected = "All",
+                              multiple = TRUE),
+
                   # Action button to trigger filtering
                   actionButton("filter_btn", "Find Vehicles")
                 ),
 
-                # Summary statistics box moved from Analysis tab
-                box(
+              box(
                   title = "Summary Statistics",
                   status = "primary",
                   solidHeader = TRUE,
                   width = 8,
                   verbatimTextOutput("summary_text")
-                )
-              ),
-
-              fluidRow(
-                # Filtered vehicle data table moved from Your Options tab
+                ),
+                column(width = 2),
+                # Filtered vehicle data table
                 box(
                   title = "Filtered Vehicle Options",
                   status = "primary",
                   solidHeader = TRUE,
-                  width = 12,
-                  tableOutput("filtered_table")
-                )
-              )
+                  width = 8,
+                  DTOutput("filtered_table")
+                ),
+                column(width = 2))
+
+      )
       )
     )
   )
-)
 
 # Define the server
 server <- function(input, output, session) {
@@ -159,14 +179,20 @@ server <- function(input, output, session) {
     # Handle "All" option for car make
     car_make_selected <- if ("All" %in% input$make) NULL else input$make
     vehicle_type_selected <- if ("All" %in% input$vehicle_type) NULL else input$vehicle_type
+    model_year_selected <- if ("All" %in% input$model_year) NULL else as.integer(input$model_year)
 
     filter_vehicles(
       data = clean_vehicle,
       mileage_range = input$mileage,
       car_make = car_make_selected,
-      vehicle_type = vehicle_type_selected
+      vehicle_type = vehicle_type_selected,
+      year_range = if (is.null(model_year_selected)) NULL else range(model_year_selected)
     ) %>%
-      select(model_year, make, model, electric_vehicle_type, electric_range)  # Select relevant columns
+      select(model_year,
+             make,
+             model,
+             electric_vehicle_type,
+             electric_range)  # Select relevant columns
   })
 
   # Reactive expression to group and calculate average mileage
@@ -174,15 +200,20 @@ server <- function(input, output, session) {
     req(filtered_data())  # Ensure filtered data exists
 
     filtered_data() %>%
-      group_by(make, model, electric_vehicle_type) %>%
-      summarise(average_mileage = mean(electric_range, na.rm = TRUE), .groups = 'drop')
+      group_by(model_year, make, model, electric_vehicle_type) %>%
+      summarise(average_mileage = round(mean(electric_range, na.rm = TRUE), 0), .groups = 'drop')
   })
 
-  # Display the grouped data in a table
-  output$filtered_table <- renderTable({
+  # Display the grouped data in a datatable
+  output$filtered_table <- renderDT({
     req(grouped_data())  # Ensure grouped data exists
-    head(grouped_data())  # Display the first few rows of the grouped data
-  })
+
+    # Arrange the data by highest average mileage and display it as a datatable
+    grouped_data() %>%
+      arrange(desc(average_mileage)) %>%
+      datatable(options = list(pageLength = 10, autoWidth = TRUE,
+                               order = list(list(5, 'desc'))))
+    })
 
   # Generate and display summary statistics for the filtered data
   output$summary_text <- renderPrint({
