@@ -65,12 +65,39 @@ ui <- dashboardPage(
               )
       ),
 
-      # Analysis Tab
+      # Analysis Tab (empty)
       tabItem(tabName = "analysis",
               fluidRow(
                 box(
-                  title = "Select Criteria for Analysis",
+                  title = "Analysis",
                   status = "info",
+                  solidHeader = TRUE,
+                  width = 12,
+                  "This tab is currently empty."
+                )
+              )
+      ),
+
+      # Analysis Tab (empty)
+      tabItem(tabName = "analysis",
+              fluidRow(
+                box(
+                  title = "Analysis",
+                  status = "info",
+                  solidHeader = TRUE,
+                  width = 12,
+                  "This tab is currently empty."
+                )
+              )
+      ),
+
+      # Your Options Tab (with filtering options and summary)
+      tabItem(tabName = "options",
+              fluidRow(
+                # Filtering box moved from Analysis tab
+                box(
+                  title = "Select Criteria for Analysis",
+                  status = "primary",
                   solidHeader = TRUE,
                   width = 4,
 
@@ -82,37 +109,38 @@ ui <- dashboardPage(
                   # Select input for car make
                   selectInput("make",
                               "Select Car Make:",
-                              choices = unique(clean_vehicle$make),
-                              selected = NULL,
+                              choices = c("All", sort(unique(clean_vehicle$make))),
+                              selected = "All",
                               multiple = TRUE),
 
                   # Select input for vehicle type
                   selectInput("vehicle_type",
                               "Select Type of Vehicle:",
-                              choices = c("Battery Electric Vehicle (BEV)",
+                              choices = c("All",
+                                          "Battery Electric Vehicle (BEV)",
                                           "Plug-in Hybrid Electric Vehicle (PHEV)"),
-                              selected = NULL,
+                              selected = "All",
                               multiple = TRUE),
 
                   # Action button to trigger filtering
                   actionButton("filter_btn", "Find Vehicles")
                 ),
+
+                # Summary statistics box moved from Analysis tab
                 box(
                   title = "Summary Statistics",
-                  status = "success",
+                  status = "primary",
                   solidHeader = TRUE,
                   width = 8,
                   verbatimTextOutput("summary_text")
                 )
-              )
-      ),
+              ),
 
-      # Your Options Tab
-      tabItem(tabName = "options",
               fluidRow(
+                # Filtered vehicle data table moved from Your Options tab
                 box(
                   title = "Filtered Vehicle Options",
-                  status = "warning",
+                  status = "primary",
                   solidHeader = TRUE,
                   width = 12,
                   tableOutput("filtered_table")
@@ -128,23 +156,32 @@ server <- function(input, output, session) {
 
   # Reactive expression to filter data based on user input
   filtered_data <- eventReactive(input$filter_btn, {
+    # Handle "All" option for car make
+    car_make_selected <- if ("All" %in% input$make) NULL else input$make
+    vehicle_type_selected <- if ("All" %in% input$vehicle_type) NULL else input$vehicle_type
+
     filter_vehicles(
       data = clean_vehicle,
       mileage_range = input$mileage,
-      car_make = input$make,
-      vehicle_type = input$vehicle_type
+      car_make = car_make_selected,
+      vehicle_type = vehicle_type_selected
     ) %>%
-      select(model_year,
-             make,
-             model,
-             electric_vehicle_type,
-             electric_range)  # Select relevant columns
+      select(model_year, make, model, electric_vehicle_type, electric_range)  # Select relevant columns
   })
 
-  # Display the filtered vehicle data in a table
-  output$filtered_table <- renderTable({
+  # Reactive expression to group and calculate average mileage
+  grouped_data <- reactive({
     req(filtered_data())  # Ensure filtered data exists
-    head(filtered_data())  # Display only the selected columns
+
+    filtered_data() %>%
+      group_by(make, model, electric_vehicle_type) %>%
+      summarise(average_mileage = mean(electric_range, na.rm = TRUE), .groups = 'drop')
+  })
+
+  # Display the grouped data in a table
+  output$filtered_table <- renderTable({
+    req(grouped_data())  # Ensure grouped data exists
+    head(grouped_data())  # Display the first few rows of the grouped data
   })
 
   # Generate and display summary statistics for the filtered data
