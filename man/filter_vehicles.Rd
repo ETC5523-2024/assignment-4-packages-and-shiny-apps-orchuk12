@@ -8,7 +8,8 @@ filter_vehicles(
   data,
   mileage_range = c(0, 500),
   car_make = NULL,
-  vehicle_type = NULL
+  vehicle_type = NULL,
+  year_range = NULL
 )
 }
 \arguments{
@@ -19,11 +20,13 @@ filter_vehicles(
 \item{car_make}{A character vector of car makes to include.}
 
 \item{vehicle_type}{A character vector of vehicle types to include.}
+
+\item{year_range}{A numeric vector of length 2 indicating the range of desired model years.}
 }
 \value{
 A filtered dataframe based on the user's provided criteria.
 }
 \description{
 This function filters the dataset based on user-selected electric range,
-car make, and type of vehicle.
+car make, type of vehicle, and model year.
 }
