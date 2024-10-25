@@ -4,7 +4,7 @@ Version: 0.0.0.9000
 Authors@R: 
     person("Rayyan", "Aamir", , "raam0001@student.monash.edu", role = c("aut", "cre"))
 Description: This package includes an RShiny app which studies the statistics behind electric vehicles in the State of Washington in the US. The app provides interactivity for the user to test combinations of variables and come upon their own conclusions regarding electric vehicles.
-License: `use_mit_license()`
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
