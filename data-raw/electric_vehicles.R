@@ -13,7 +13,7 @@ clean_vehicle_raw <- electric_vehicle_raw %>%
 
 # Filtering the necessary data
 clean_vehicle <- clean_vehicle_raw %>%
-  filter(model_year >= 2008) %>%
+  filter(model_year >= 2010) %>%
   filter(state == "WA")
 
 # Deselecting vin-number
