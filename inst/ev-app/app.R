@@ -215,15 +215,18 @@ server <- function(input, output, session) {
                                order = list(list(5, 'desc'))))
     })
 
-  # Generate and display summary statistics for the filtered data
+  # Generate and display enhanced summary statistics for the filtered data
   output$summary_text <- renderPrint({
     req(filtered_data())  # Ensure filtered data exists
     summary_stats <- summary_filtered_data(filtered_data())
 
-    cat("Average Electric Range:", summary_stats$avg_electric_range, "\n")
-    cat("Most Common Make:", summary_stats$most_common_make, "\n")
-    cat("Vehicle Type Distribution:\n")
-    print(summary_stats$vehicle_type_count)
+    cat("Average Electric Range:", summary_stats$avg_electric_range, "miles\n")
+    cat("Median Electric Range:", summary_stats$median_electric_range, "miles\n")
+    cat("Min Electric Range:", summary_stats$min_electric_range, "miles\n")
+    cat("Max Electric Range:", summary_stats$max_electric_range, "miles\n\n")
+    cat("Top Common Makes:", paste(summary_stats$top_common_makes, collapse = ", "), "\n\n")
+    cat("Vehicle Type Distribution (in %):\n")
+    print(summary_stats$vehicle_type_percentage)
   })
 }
 
