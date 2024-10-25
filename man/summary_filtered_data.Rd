@@ -7,11 +7,20 @@
 summary_filtered_data(data)
 }
 \arguments{
-\item{data}{The filtered dataset (dataframe).}
+\item{data}{A dataframe containing the filtered vehicle data.
+It should include columns for electric range, make, and electric vehicle type.}
 }
 \value{
-A list with summary statistics like average electric range, common makes, and count of vehicle types.
+A list with the following elements:
+\item{avg_electric_range}{Average electric range across the filtered dataset.}
+\item{median_electric_range}{Median electric range across the filtered dataset.}
+\item{min_electric_range}{Minimum electric range in the filtered dataset.}
+\item{max_electric_range}{Maximum electric range in the filtered dataset.}
+\item{top_common_makes}{Vector of the top one to three most common vehicle makes in the filtered dataset.}
+\item{vehicle_type_percentage}{Named vector showing the percentage distribution of vehicle types.}
 }
 \description{
-This function provides summary statistics for the filtered dataset.
+This function provides a comprehensive summary of the filtered dataset,
+including average, median, min, max electric range, most common makes,
+and vehicle type distribution as percentages.
 }
