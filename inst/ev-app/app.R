@@ -1,40 +1,123 @@
 library(shiny)
+library(shinydashboard)
+library(dashboardthemes)
 library(tidyverse)
+library(plotly)
+library(kableExtra)
 
-# Define the UI
-ui <- fluidPage(
-  titlePanel("Electric Vehicle Finder"),
+# Define the UI with shinydashboard
+ui <- dashboardPage(
+  dashboardHeader(title = "Electric Vehicle Finder"),
 
-  sidebarLayout(
-    sidebarPanel(
-      # Slider input for electric range
-      sliderInput("mileage",
-                  "Desired Electric Range (in miles):",
-                  min = 0, max = 337, value = c(0, 100)),
+  # Sidebar content
+  dashboardSidebar(
+    sidebarMenu(
+      menuItem("Home", tabName = "home", icon = icon("home")),
+      menuItem("Analysis", tabName = "analysis", icon = icon("chart-line")),
+      menuItem("Your Options", tabName = "options", icon = icon("car"))
+    )
+  ),
 
-      # Select input for car make
-      selectInput("make",
-                  "Select Car Make:",
-                  choices = unique(clean_vehicle$make),
-                  selected = NULL,
-                  multiple = TRUE),
+  # Body content
+  dashboardBody(
+    # Apply a theme from the dashboardthemes package
+    shinyDashboardThemes(theme = "poor_mans_flatly"),
 
-      # Select input for vehicle type
-      selectInput("vehicle_type",
-                  "Select Type of Vehicle:",
-                  choices = c("Battery Electric Vehicle (BEV)",
-                              "Plug-in Hybrid Electric Vehicle (PHEV)"),
-                  selected = NULL,
-                  multiple = TRUE),
+    tabItems(
+      # Home Tab
+      tabItem(tabName = "home",
+              h1("Examining Electric Vehicle Data in Washington State, USA.",
+                 br(),
+                 br(),
+                 style = "text-align: center; font-weight: bold"),
+              h2("Purpose of This Dashboard",
+                 style = "text-align: center; font-weight: bold"),
+              fluidRow(
+                column(width = 2),
+                column(width = 8,
+                       h4("This dashboard is part of the Shiny app developed for Assignment 4 for
+                       the unit Communicating with Data (ETC5523) taken in Semester 2 of 2024 at
+                       Monash University Clayton Campus. This dashboard aims to display statistics
+                       and visualizations related to electric vehicles in the State of Washington,
+                       USA. Factors such as electric vehicle range, types (BEV or PHEV), and
+                       manufacturers are visualized to help users understand trends and
+                       characteristics of the electric vehicle landscape. With this visualization,
+                       the author aims to provide a general understanding to the public who wish
+                       to explore the growing adoption of electric vehicles presented here.",
+                          style = "font-size: 28px; font-family: 'Times New Roman';
+                          text-align: center;")),
+                column(width = 2)),
 
-      # Action button to trigger filtering
-      actionButton("filter_btn", "Find Vehicles")
-    ),
+              h2("How To Use",
+                 style = "text-align: center; font-weight: bold"),
+              fluidRow(
+                column(width = 2),
+                column(width = 8,
+                       h4("To use this dashboard, simply navigate using the menu on the left side
+                          of the screen, where you can switch between different pages related to
+                          the topics listed. Each page contains interactive visualizations that
+                          allow you to explore the data through options such as hovering,
+                          filtering, and short animations. Additionally, each page provides
+                          explanations to help you better understand the displayed information.",
+                          style = "font-size: 28px; font-family: 'Times New Roman';
+                          text-align: center;")),
+                column(width = 2)
+              )
+      ),
 
-    mainPanel(
-      tabsetPanel(
-        tabPanel("Filtered Vehicles", tableOutput("filtered_table")),
-        tabPanel("Summary", verbatimTextOutput("summary_text"))
+      # Analysis Tab
+      tabItem(tabName = "analysis",
+              fluidRow(
+                box(
+                  title = "Select Criteria for Analysis",
+                  status = "info",
+                  solidHeader = TRUE,
+                  width = 4,
+
+                  # Slider input for electric range
+                  sliderInput("mileage",
+                              "Desired Electric Range (in miles):",
+                              min = 0, max = 337, value = c(0, 100)),
+
+                  # Select input for car make
+                  selectInput("make",
+                              "Select Car Make:",
+                              choices = unique(clean_vehicle$make),
+                              selected = NULL,
+                              multiple = TRUE),
+
+                  # Select input for vehicle type
+                  selectInput("vehicle_type",
+                              "Select Type of Vehicle:",
+                              choices = c("Battery Electric Vehicle (BEV)",
+                                          "Plug-in Hybrid Electric Vehicle (PHEV)"),
+                              selected = NULL,
+                              multiple = TRUE),
+
+                  # Action button to trigger filtering
+                  actionButton("filter_btn", "Find Vehicles")
+                ),
+                box(
+                  title = "Summary Statistics",
+                  status = "success",
+                  solidHeader = TRUE,
+                  width = 8,
+                  verbatimTextOutput("summary_text")
+                )
+              )
+      ),
+
+      # Your Options Tab
+      tabItem(tabName = "options",
+              fluidRow(
+                box(
+                  title = "Filtered Vehicle Options",
+                  status = "warning",
+                  solidHeader = TRUE,
+                  width = 12,
+                  tableOutput("filtered_table")
+                )
+              )
       )
     )
   )
@@ -76,6 +159,5 @@ server <- function(input, output, session) {
   })
 }
 
-
 # Run the application
-shinyApp(ui = ui, server = server)
+shinyApp(ui = ui, server = server, options = list(launch.browser = TRUE))
