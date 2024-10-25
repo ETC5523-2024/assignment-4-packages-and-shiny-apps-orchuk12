@@ -1,6 +1,6 @@
 ## code to prepare `electric_vehicles` dataset goes here
 
-library(tidyvsere)
+library(tidyverse)
 library(janitor)
 
 # Loading raw data
@@ -29,5 +29,9 @@ clean_vehicle <- clean_vehicle %>%
   mutate(lon = as.numeric(str_extract(vehicle_location, "^[-\\d\\.]+")),
          lat = as.numeric(str_extract(vehicle_location, "[-\\d\\.]+$")))
 
+# Converting model_year and electric_range into an integer
+clean_vehicle <- clean_vehicle %>%
+  mutate(model_year = as.integer(model_year),
+         electric_range = as.integer(electric_range))
 
 usethis::use_data(clean_vehicle, overwrite = TRUE)
