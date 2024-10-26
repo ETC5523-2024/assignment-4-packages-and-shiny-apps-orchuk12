@@ -93,8 +93,26 @@ ui <- dashboardPage(
               fluidRow(
                 column(width = 3),
                 column(width = 6,
-                       h3("This is a test description.",
-                          style = "font-size: 23px; font-family: 'Times New Roman'; text-align: center;")),
+                       h3("It can be seen that the distribution of electric vehicles (EVs) across
+                          Washington State. The spread is somewhat scattered, but there are clear
+                          clusters in areas like Seattle, Spokane, and Portland. Seattle, as a hub
+                          of technology and innovation, is home to multinational corporations (MNCs)
+                          like Oracle and Amazon, both of which offer perks like rebates or free charging
+                          stations for employees who own an EV. It’s no surprise that a large portion of
+                          EV owners in this area are either part of higher-income households or are
+                          eco-conscious consumers looking to make a difference.",
+                          style = "font-size: 23px; font-family: 'Times New Roman';
+                          text-align: justify;"),
+                       h3("But why are there so many EVs in Washington? Well, in mid-2023,
+                          Washington introduced an EV instant rebate program, offering between
+                          $2,500 to $9,000 toward the purchase or lease of an EV (Washington State
+                          Department of Commerce, 2024). The program aims to issue around 6,500 to
+                          8,000 rebates, making it one of the first low-cost EV lease programs in
+                          the U.S. With initiatives like these, the state is rapidly increasing its
+                          share of EVs on the road.",
+                          style = "font-size: 23px; font-family: 'Times New Roman';
+                          text-align: justify;"),
+                       br()),
                 column(width = 3)
               ),
 
@@ -125,6 +143,33 @@ ui <- dashboardPage(
               fluidRow(
                 column(width = 3),
                 column(width = 6,
+                       h3("This chart shows how the adoption of electric vehicles (EVs)
+                          in Washington State has evolved from 2010 to 2024, focusing on two
+                          main types: Battery Electric Vehicles (BEVs) and Plug-in Hybrid Electric
+                          Vehicles (PHEVs). You can clearly see a gradual rise in registrations
+                          over the years, with a noticeable surge starting around 2017. BEVs,
+                          in particular, have taken off significantly since 2020, becoming the
+                          more popular choice by a wide margin.",
+                          style = "font-size: 23px; font-family: 'Times New Roman';
+                          text-align: justify;"),
+                       h3("In fact, 2023 saw a peak in BEV
+                          registrations, suggesting a growing shift in consumer preference
+                          towards fully electric cars, possibly driven by new policies or a
+                          broader interest in sustainable transportation. PHEVs have also seen
+                          a steady increase, but their growth is much smaller compared to BEVs
+                          in recent years. Overall, this visualization captures how the EV
+                          landscape has changed, with BEVs leading the charge as the go-to
+                          option for consumers by 2024.",
+                          style = "font-size: 23px; font-family: 'Times New Roman';
+                          text-align: justify;"),
+                       br()),
+                column(width = 3)
+
+              ),
+
+              fluidRow(
+                column(width = 3),
+                column(width = 6,
                        box(
                          width = 12,
                          title = "Electric Range Distribution by Model Year",
@@ -143,6 +188,38 @@ ui <- dashboardPage(
                                     choices = c("All", sort(unique(clean_vehicle$model_year))),
                                     selected = "All",
                                     inline = TRUE)))
+              ),
+
+              fluidRow(
+                column(width = 3),
+                column(width = 6,
+                       h3("This boxplot visualizes the electric range distribution of vehicles
+                          across model years from 2010 to 2024, offering a glimpse into the
+                          evolution of battery capacity over time. In the early years (2010-2014),
+                          electric ranges were relatively low and clustered, reflecting the
+                          limited technology of the time. Starting from 2016, there’s a
+                          noticeable increase in the median range, with several models
+                          offering over 200 miles, showcasing advancements in battery technology.
+                          By 2017 and 2018, the spread of electric ranges becomes wider,
+                          indicating a broader variety of models with varying capabilities.
+                          The peak diversity is seen around 2020, with a mix of high-range
+                          vehicles pushing the limits of electric capacity.",
+                          style = "font-size: 23px; font-family: 'Times New Roman';
+                          text-align: justify;"),
+                       h3("Interestingly, after 2021, the boxplots show a narrowing of the
+                          electric range distribution. This could be linked to reduced vehicle
+                          purchases during the COVID-19 pandemic, as manufacturers might have
+                          focused more on consistent and cost-effective models, resulting in less
+                          variety in electric ranges. The 2024 boxplot, with a tighter spread
+                          and a lower median range, suggests a potential stabilization in the
+                          market, as manufacturers align around more standardized ranges.
+                          Overall, this plot captures the trends, growth, and potential impact
+                          of external events like COVID-19 on electric vehicle offerings over
+                          the years.",
+                          style = "font-size: 23px; font-family: 'Times New Roman';
+                          text-align: justify;"),
+                       br()),
+                column(width = 3)
               )
       ),
 
@@ -264,7 +341,7 @@ server <- function(input, output, session) {
       count(model_year, electric_vehicle_type)
 
     p <- ggplot(plot_data, aes(x = factor(model_year), y = n, fill = electric_vehicle_type)) +
-      geom_bar(stat = "identity", position = "stack") +
+      geom_bar(stat = "identity", position = "dodge") +
       labs(title = "Vehicle Type Distribution by Model Year",
            x = "Model Year",
            y = "Number of Vehicles",
