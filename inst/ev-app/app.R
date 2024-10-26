@@ -5,8 +5,10 @@ library(tidyverse)
 library(plotly)
 library(kableExtra)
 library(DT)
+library(leaflet)
+library(sf)
 
-# Define the UI with shinydashboard
+# Define the UI
 ui <- dashboardPage(
   dashboardHeader(title = "Electric Vehicle Finder"),
 
@@ -47,8 +49,8 @@ ui <- dashboardPage(
                        to explore the growing adoption of electric vehicles presented here.",
                           style = "font-size: 28px; font-family: 'Times New Roman';
                           text-align: center;")),
-                column(width = 2)),
-
+                column(width = 2)
+              ),
               h2("How To Use",
                  style = "text-align: center; font-weight: bold"),
               fluidRow(
@@ -63,32 +65,35 @@ ui <- dashboardPage(
                           style = "font-size: 28px; font-family: 'Times New Roman';
                           text-align: center;")),
                 column(width = 2)
+              ),
+              h3("Created By",
+                 style = "text-align: center; font-weight: bold"),
+              fluidRow(
+                column(width = 2),
+                column(width = 8,
+                       h5("Name: Rayyan Aamir",
+                          style = "text-align: center; font-weight: bold"),
+                       h5("Student ID: 32065647",
+                          style = "text-align: center; font-weight: bold"),
+                       h5("Email: raam0001@student.monash.edu",
+                          style = "text-align: center; font-weight: bold"))
               )
       ),
 
-      # Analysis Tab (empty)
+      # Analysis Tab
       tabItem(tabName = "analysis",
+              h1("So Where Does Washington State Stand?",
+                 style = "text-align: center; font-weight: bold"),
               fluidRow(
-                box(
-                  title = "Analysis",
-                  status = "info",
-                  solidHeader = TRUE,
-                  width = 12,
-                  "This tab is currently empty."
-                )
-              )
-      ),
-
-      # Analysis Tab (empty)
-      tabItem(tabName = "analysis",
-              fluidRow(
-                box(
-                  title = "Analysis",
-                  status = "info",
-                  solidHeader = TRUE,
-                  width = 12,
-                  "This tab is currently empty."
-                )
+                column(width = 3),
+                column(width = 6,
+                       box(
+                         width = 12,
+                         title = "Map",
+                         status = "primary",
+                         solidHeader = TRUE,
+                         leafletOutput("ev_map")
+                ))
               )
       ),
 
@@ -107,14 +112,14 @@ ui <- dashboardPage(
                 )
               ),
 
-              # Filtering options and testing text
+              # Filtering options
               fluidRow(
                 # Selection criteria box
                 box(
                   title = "Select Criteria for Analysis",
                   status = "primary",
                   solidHeader = TRUE,
-                  width = 4,
+                  width = 6,
 
                   # Slider input for electric range
                   sliderInput("mileage",
@@ -148,15 +153,17 @@ ui <- dashboardPage(
                   actionButton("filter_btn", "Find Vehicles")
                 ),
 
-              box(
+                # Summary and filtered vehicle data table
+                box(
                   title = "Summary Statistics",
                   status = "primary",
                   solidHeader = TRUE,
-                  width = 8,
+                  width = 6,
                   verbatimTextOutput("summary_text")
+                )
                 ),
+              fluidRow(
                 column(width = 2),
-                # Filtered vehicle data table
                 box(
                   title = "Filtered Vehicle Options",
                   status = "primary",
@@ -164,15 +171,71 @@ ui <- dashboardPage(
                   width = 8,
                   DTOutput("filtered_table")
                 ),
-                column(width = 2))
-
-      )
+                column(width = 2)
+              )
       )
     )
   )
+)
+
 
 # Define the server
 server <- function(input, output, session) {
+
+  ## Creating a leaflet map
+
+  # Create the spatial data frame from clean_vehicle data
+  clean_vehicle_sf <- st_as_sf(clean_vehicle, coords = c("lon", "lat"), crs = 4326)
+
+  # Create a grid over the area with a specific cell size (e.g., 0.05 degrees)
+  grid <- st_make_grid(clean_vehicle_sf, cellsize = 0.05, square = TRUE)
+
+  # Convert the grid to an sf object
+  grid_sf <- st_as_sf(grid)
+
+  # Perform a spatial join to count the number of vehicles in each grid cell
+  grid_counts <- st_join(clean_vehicle_sf, grid_sf, join = st_intersects) %>%
+    group_by(geometry) %>%
+    summarize(count = n()) %>%
+    st_as_sf()
+
+  # Simplifying the data for faster map generation
+  grid_counts_simplified <- st_simplify(grid_counts, dTolerance = 0.01)
+
+  # Locations of most populous cities to overlay on the map
+  cities <- data.frame(
+    city = c("Seattle", "Olympia", "Tacoma", "Spokane"),
+    lat = c(47.6062, 47.0379, 47.2529, 47.4588),
+    lon = c(-122.3321, -122.9007, -122.4443, -117.4360)
+  )
+
+  # Render the Leaflet map in the server
+  output$ev_map <- renderLeaflet({
+    # Original map code
+      leaflet() %>%
+        addTiles() %>%
+        addCircleMarkers(data = grid_counts_simplified,
+                         lng = ~st_coordinates(geometry)[, 1],
+                         lat = ~st_coordinates(geometry)[, 2],
+                         radius = ~log10(count),
+                         color = "red",
+                         fillOpacity = 0.7,
+                         popup = ~paste("EV Count:", count)) %>%
+        addLabelOnlyMarkers(data = cities,
+                            lng = ~lon,
+                            lat = ~lat,
+                            label = ~city,
+                            labelOptions = labelOptions(noHide = TRUE,
+                                                        direction = "top",
+                                                        textOnly = TRUE,
+                                                        style = list("color" = "blue",
+                                                                     "font-size" = "12px",
+                                                                     "font-weight" = "bold"))) %>%
+        addLegend("topright",
+                  colors = "red",
+                  labels = "EV Count",
+                  title = "Aggregated EV Observations")
+  })
 
   # Reactive expression to filter data based on user input
   filtered_data <- eventReactive(input$filter_btn, {
