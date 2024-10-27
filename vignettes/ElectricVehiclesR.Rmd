@@ -7,6 +7,27 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+## ElectricVehiclesR: Exploring Electric Vehicle Data in Washington State
+
+The ElectricVehiclesR package is designed to provide comprehensive insights into electric vehicle (EV) adoption and trends in Washington State, USA. It leverages an extensive dataset of registered electric vehicles, offering tools to filter, summarize, and visualize EV data. This package is particularly useful for analysts, researchers, and policymakers interested in understanding the growth of electric and plug-in hybrid vehicles in this region.
+
+## Key Features and Functions
+
+The ElectricVehiclesR package includes several datasets and functions aimed at streamlining the analysis of electric vehicle data:
+
+1) **cities** - This dataset contains the names of cities where electric vehicles have been registered. It serves as a useful reference for mapping and analysis at the city level.
+
+2) **clean_vehicle** - This is the primary dataset, providing detailed information about electric vehicles registered in Washington State. It includes various attributes such as vehicle make, model, type, electric range, and more. This dataset forms the foundation for most analyses within the package.
+
+3) **filter_vehicles()** - This function allows users to filter the dataset based on specific criteria, such as desired vehicle type, make, or electric range. It makes it easy to narrow down the data to a specific subset that aligns with user preferences, aiding targeted analyses.
+
+4) **grid_counts_simplified** - This dataset provides simplified grid counts, which are particularly useful for creating visualizations with the Leaflet package. It helps users create clean and efficient map plots, improving performance when mapping large datasets of vehicle locations.
+
+5) **load_app()** - This function launches the interactive Shiny application included in the package. The Shiny app allows users to interactively explore the electric vehicle dataset, apply filters, and visualize trends through dynamic charts and maps.
+
+6) **summary_filtered_data()** - This function summarizes the filtered dataset, providing key metrics and insights based on the selected subset of data. It can be used to quickly understand the characteristics and distribution of filtered electric vehicles, such as counts by make, type, or range.
+
+
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -14,6 +35,65 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, message = FALSE}
 library(ElectricVehiclesR)
+library(tidyverse)
 ```
+
+### Example 1: Using the `filter_data()` function
+
+```{r}
+# Load dataset 
+data(clean_vehicle)
+```
+
+```{r}
+# Filter for electric range between 150 and 300, make 'Tesla', and vehicle type 'BEV'
+filtered_data <- filter_vehicles(
+  data = clean_vehicle,
+  mileage_range = c(0, 500),
+  car_make = "TESLA",
+  vehicle_type = "Battery Electric Vehicle (BEV)"
+)
+
+head(filtered_data)
+```
+
+### Example 2:  Using the `filter_data()` function
+
+```{r}
+
+# Filter for electric range between 100 and 250, model years between 2018 and 2020
+filtered_data <- filter_vehicles(
+  data = clean_vehicle,
+  mileage_range = c(100, 250),
+  year_range = c(2018, 2020)
+)
+
+head(filtered_data)
+
+```
+
+### Using the `summary_filtered_data` function
+
+```{r}
+
+# Using the filtered_data from the previous example
+summary_stats <- summary_filtered_data(filtered_data)
+
+print(summary_stats)
+
+```
+### Using the `load_app` function
+
+```{r eval = FALSE}
+
+# Launch the Shiny app
+load_app()
+
+# This will open the Shiny app in your default web browser, allowing you to 
+# explore the electric vehicle dataset interactively.
+
+```
+
+
