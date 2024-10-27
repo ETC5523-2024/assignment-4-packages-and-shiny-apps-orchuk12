@@ -18,7 +18,11 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of ElectricVehiclesR is to study the statistics behind electric vehicles in the State of Washington in the US. An RShiny app provides interactivity for the user to test combinations of variables and come upon their own conclusions regarding electric vehicles.
+The goal of the ElectricVehiclesR package is to study the statistics behind electric vehicles in the State of Washington in the United States of America. An RShiny app is included within this package and provides interactivity for the user to view various plots and filter them according to their will and test combinations of criteria and come upon their own personal electric vehicles options.
+
+You can view the in-depth guide to this package on its [website](https://etc5523-2024.github.io/assignment-4-packages-and-shiny-apps-orchuk12/).
+
+NOTE: Upon launching the RShiny app, it may appear to be laggy, slow, or the plots may not be appearing. Please allow the app approximately 15-30 seconds to boot up correctly. This is caused by the various large datasets that this app depends upon.
 
 ## Installation
 
@@ -31,7 +35,7 @@ devtools::install_github("ETC5523-2024/assignment-4-packages-and-shiny-apps-orch
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+This is a basic example which shows you how to produce some plots with the main dataset `clean_vehicle`:
 
 ```{r example, message=FALSE}
 

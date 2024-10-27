@@ -2,7 +2,7 @@
 title: "ElectricVehiclesR Package"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{My amazing package}
+  %\VignetteIndexEntry{ElectricVehiclesR Package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
