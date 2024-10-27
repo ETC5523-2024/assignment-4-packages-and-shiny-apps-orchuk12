@@ -78,7 +78,18 @@ ui <- dashboardPage(
               h1("So Where Does Washington State Stand?",
                  style = "text-align: center; font-weight: bold"),
               fluidRow(
-                column(width = 3),
+                column(width = 3,
+                       br(),
+                       br(),
+                       br(),
+                       br(),
+                       br(),
+                       h3("The map is fully interactive, the user may hover over points on
+                       the map to view the aggregated EV count in a certain location or zoom in to
+                       study further micro clusters and come upon their own conclusions as to whether
+                       there are other locations that show strangely high densities of EVs.",
+                      style = "font-size: 17px; font-family: 'Times New Roman';
+                      text-align: justify;")),
                 column(width = 6,
                        box(
                          width = 12,
@@ -117,7 +128,18 @@ ui <- dashboardPage(
               ),
 
               fluidRow(
-                column(width = 3),
+                column(width = 3,
+                       br(),
+                       br(),
+                       br(),
+                       br(),
+                       br(),
+                       h3("The bar chart is interactive upon hovering and upon filter selection
+                          through the buttons on the right of the chart. The user is free to examine
+                          the plot and filter it according to their requirement and hover on the
+                          chart for further information if they desire",
+                          style = "font-size: 17px; font-family: 'Times New Roman';
+                      text-align: justify;")),
                 column(width = 6,
                        box(
                          width = 12,
@@ -168,7 +190,18 @@ ui <- dashboardPage(
               ),
 
               fluidRow(
-                column(width = 3),
+                column(width = 3,
+                       br(),
+                       br(),
+                       br(),
+                       br(),
+                       br(),
+                       h3("The box plots here follow the same concept as the bar chart above, the
+                          user is more than welcome to select the years they wish to study and hover
+                          for further summary statistics: outliers, minimum, maximum, lower quartile,
+                          median, upper quartile.",
+                          style = "font-size: 17px; font-family: 'Times New Roman';
+                      text-align: justify;")),
                 column(width = 6,
                        box(
                          width = 12,
@@ -228,9 +261,12 @@ ui <- dashboardPage(
               fluidRow(
                 column(width = 12,
                        h2("Explore Your Electric Vehicle Options",
-                          style = "font-size: 32px; font-family: 'Times New Roman'; text-align: center; font-weight: bold; margin-top: 20px;"),
-                       p("Use the criteria below to filter and find electric vehicles that match your preferences.",
-                         style = "font-size: 18px; font-family: 'Times New Roman'; text-align: center; margin-bottom: 20px;"))
+                          style = "font-size: 32px; font-family: 'Times New Roman';
+                          text-align: center; font-weight: bold; margin-top: 20px;"),
+                       p("Use the criteria below to filter and find electric vehicles
+                         that match your preferences.",
+                         style = "font-size: 18px; font-family: 'Times New Roman';
+                         text-align: center; margin-bottom: 20px;"))
               ),
 
               fluidRow(
