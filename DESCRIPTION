@@ -22,7 +22,8 @@ Imports:
     dashboardthemes,
     DT,
     plotly,
-    leaflet
+    leaflet,
+    tidyverse
 URL: https://github.com/ETC5523-2024/assignment-4-packages-and-shiny-apps-orchuk12, https://etc5523-2024.github.io/assignment-4-packages-and-shiny-apps-orchuk12/
 Suggests: 
     knitr,
